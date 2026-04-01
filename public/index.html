@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa Estelar Infantil ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #0a0a14;
+    --deep: #10102a;
+    --card: #14142e;
+    --border: rgba(180,160,255,0.13);
+    --gold: #e8c97a;
+    --gold2: #f5dfa0;
+    --lavender: #b49fff;
+    --lavender2: #d4c4ff;
+    --rose: #f4a0b5;
+    --teal: #7ee8d4;
+    --text: #e8e4f5;
+    --muted: #8a86a8;
+    --radius: 18px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--night);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 50% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 75%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 50%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 35%, rgba(180,160,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 65%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 35%, rgba(255,255,255,0.3) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 540px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+  .screen { display: none; animation: fadeUp 0.5s ease forwards; }
+  .screen.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* HERO */
+  .hero { text-align: center; padding: 64px 0 48px; }
+  .hero-orbit { width: 110px; height: 110px; margin: 0 auto 28px; position: relative; }
+  .hero-orbit .center-star { position: absolute; inset: 50%; transform: translate(-50%,-50%); font-size: 44px; line-height: 1; }
+  .hero-orbit .ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid var(--border); animation: spin 18s linear infinite; }
+  .hero-orbit .ring::before { content: '✦'; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); font-size: 12px; color: var(--gold); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 300; letter-spacing: 0.02em; line-height: 1.15; margin-bottom: 12px; background: linear-gradient(135deg, var(--gold2) 0%, var(--lavender2) 60%, var(--rose) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero p { font-size: 15px; color: var(--muted); line-height: 1.6; max-width: 320px; margin: 0 auto 36px; }
+
+  /* BUTTONS */
+  .btn-primary { display: inline-block; background: linear-gradient(135deg, var(--gold) 0%, var(--rose) 100%); color: var(--night); font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 15px; padding: 14px 36px; border-radius: 50px; border: none; cursor: pointer; transition: opacity 0.2s, transform 0.2s; letter-spacing: 0.02em; }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .btn-ghost { display: inline-block; background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 10px 20px; border-radius: 50px; border: 1px solid var(--border); cursor: pointer; transition: border-color 0.2s, color 0.2s; margin-top: 12px; }
+  .btn-ghost:hover { border-color: var(--lavender); color: var(--lavender2); }
+
+  /* FORM */
+  .form-header { padding: 40px 0 28px; text-align: center; }
+  .form-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--gold2); margin-bottom: 6px; }
+  .form-header p { font-size: 13px; color: var(--muted); }
+  .form-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 24px; margin-bottom: 16px; }
+  .field { margin-bottom: 20px; }
+  .field:last-child { margin-bottom: 0; }
+  label { display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  input, select { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 300; padding: 13px 16px; outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+  input:focus { border-color: var(--lavender); }
+  input::placeholder { color: var(--muted); }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .form-footer { text-align: center; padding: 8px 0 0; }
+
+  /* LOADING */
+  .loading-wrap { text-align: center; padding: 80px 0; }
+  .loader-orbit { width: 80px; height: 80px; margin: 0 auto 32px; position: relative; }
+  .loader-orbit .dot { position: absolute; inset: 0; animation: spin 1.8s linear infinite; }
+  .loader-orbit .dot::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background: var(--gold); border-radius: 50%; }
+  .loader-orbit .dot2 { animation-duration: 2.6s; animation-direction: reverse; }
+  .loader-orbit .dot2::before { width: 5px; height: 5px; background: var(--lavender); top: auto; bottom: 0; }
+  .loader-orbit .dot3 { animation-duration: 1.2s; }
+  .loader-orbit .dot3::before { width: 4px; height: 4px; background: var(--rose); top: 50%; left: 0; transform: translateY(-50%); }
+  .loading-wrap h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; color: var(--gold2); margin-bottom: 8px; }
+  .loading-wrap p { font-size: 14px; color: var(--muted); }
+  .loading-steps { margin-top: 28px; display: flex; flex-direction: column; gap: 10px; text-align: left; max-width: 260px; margin-left: auto; margin-right: auto; }
+  .step-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); opacity: 0.4; transition: opacity 0.4s, color 0.4s; }
+  .step-item.active { opacity: 1; color: var(--lavender2); }
+  .step-item.done { opacity: 0.7; color: var(--teal); }
+  .step-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+  /* REPORT */
+  .report-header { text-align: center; padding: 48px 0 36px; }
+  .report-badge { display: inline-block; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(232,201,122,0.3); border-radius: 50px; padding: 4px 14px; margin-bottom: 16px; }
+  .report-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 300; line-height: 1.2; margin-bottom: 8px; background: linear-gradient(135deg, var(--gold2), var(--lavender2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .report-meta { font-size: 13px; color: var(--muted); line-height: 1.8; }
+  .divider { width: 40px; height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 28px auto; }
+  .report-section { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 24px; margin-bottom: 16px; }
+  .report-section h3 { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: var(--gold2); margin-bottom: 14px; line-height: 1.3; }
+  .report-section p { font-size: 14px; line-height: 1.75; color: rgba(232,228,245,0.85); margin-bottom: 16px; }
+  .tips-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lavender); margin-bottom: 10px; }
+  .tips-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .tips-list li { display: flex; gap: 10px; font-size: 13px; line-height: 1.55; color: rgba(232,228,245,0.7); }
+  .tips-list li::before { content: '✦'; color: var(--gold); font-size: 9px; flex-shrink: 0; margin-top: 3px; }
+  .cierre-card { background: linear-gradient(135deg, rgba(232,201,122,0.07) 0%, rgba(180,159,255,0.07) 100%); border: 1px solid rgba(232,201,122,0.2); border-radius: var(--radius); padding: 28px 24px; margin-bottom: 16px; }
+  .cierre-card p { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 300; font-style: italic; line-height: 1.7; color: var(--gold2); text-align: center; }
+  .report-footer { text-align: center; padding: 20px 0 8px; font-size: 12px; color: var(--muted); line-height: 1.8; border-top: 1px solid var(--border); }
+  .actions { text-align: center; padding: 20px 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .error-box { background: rgba(244,100,120,0.1); border: 1px solid rgba(244,100,120,0.3); border-radius: 12px; padding: 16px 20px; font-size: 14px; color: var(--rose); text-align: center; margin-top: 12px; }
+
+  @media (max-width: 400px) {
+    .hero h1 { font-size: 30px; }
+    .row-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="screen active" id="screen-hero">
+    <div class="hero">
+      <div class="hero-orbit">
+        <div class="ring"></div>
+        <div class="center-star">🌟</div>
+      </div>
+      <h1>Mapa Estelar<br>Infantil</h1>
+      <p>Descubre el mundo interior de tu hijo a través de su carta natal. Una guía personalizada con amor.</p>
+      <button class="btn-primary" onclick="show('screen-form')">Crear el Mapa de mi hijo ✨</button>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="screen" id="screen-form">
+    <div class="form-header">
+      <h2>Datos de tu pequeño</h2>
+      <p>Completa la información para generar el mapa</p>
+    </div>
+    <div class="form-card">
+      <div class="field">
+        <label>Nombre del niño o niña</label>
+        <input type="text" id="nombre" placeholder="Ej: Sofía, Mateo..." maxlength="40">
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>Fecha de nacimiento</label>
+          <input type="date" id="fecha">
+        </div>
+        <div class="field">
+          <label>Hora (opcional)</label>
+          <input type="time" id="hora">
+          <div class="hint">Deja vacío si no la tienes</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Ciudad de nacimiento</label>
+        <input type="text" id="ciudad" placeholder="Ej: Bogotá, Medellín..." maxlength="50">
+      </div>
+    </div>
+    <div id="form-error"></div>
+    <div class="form-footer">
+      <button class="btn-primary" onclick="validateAndGenerate()">Revelar el Mapa Estelar 🌙</button>
+      <br>
+      <button class="btn-ghost" onclick="show('screen-hero')">← Volver</button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="screen" id="screen-loading">
+    <div class="loading-wrap">
+      <div class="loader-orbit">
+        <div class="dot"></div>
+        <div class="dot dot2"></div>
+        <div class="dot dot3"></div>
+      </div>
+      <h3>Consultando las estrellas...</h3>
+      <p>Esto toma unos segundos</p>
+      <div class="loading-steps">
+        <div class="step-item active" id="step1"><div class="step-dot"></div>Calculando posiciones astrales</div>
+        <div class="step-item" id="step2"><div class="step-dot"></div>Analizando el mundo emocional</div>
+        <div class="step-item" id="step3"><div class="step-dot"></div>Descubriendo el estilo de aprendizaje</div>
+        <div class="step-item" id="step4"><div class="step-dot"></div>Escribiendo tu informe personalizado</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORT -->
+  <div class="screen" id="screen-report">
+    <div class="report-header">
+      <div class="report-badge">✦ Mapa Estelar Infantil</div>
+      <h2 id="report-nombre">—</h2>
+      <div class="report-meta" id="report-meta">—</div>
+    </div>
+    <div class="divider"></div>
+    <div class="report-section">
+      <h3 id="sec1-titulo">—</h3>
+      <p id="sec1-cuerpo">—</p>
+      <div class="tips-label" id="sec1-tips-titulo">—</div>
+      <ul class="tips-list" id="sec1-tips"></ul>
+    </div>
+    <div class="report-section">
+      <h3 id="sec2-titulo">—</h3>
+      <p id="sec2-cuerpo">—</p>
+      <div class="tips-label" id="sec2-tips-titulo">—</div>
+      <ul class="tips-list" id="sec2-tips"></ul>
+    </div>
+    <div class="report-section">
+      <h3 id="sec3-titulo">—</h3>
+      <p id="sec3-cuerpo">—</p>
+      <div class="tips-label" id="sec3-tips-titulo">—</div>
+      <ul class="tips-list" id="sec3-tips"></ul>
+    </div>
+    <div class="cierre-card">
+      <p id="cierre-texto">—</p>
+    </div>
+    <div class="report-footer" id="report-footer">—</div>
+    <div class="actions">
+      <button class="btn-ghost" onclick="nuevoMapa()">✦ Crear otro mapa</button>
+    </div>
+  </div>
+
+</div>
+<script>
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateAndGenerate() {
+  const nombre = document.getElementById('nombre').value.trim();
+  const fecha  = document.getElementById('fecha').value;
+  const ciudad = document.getElementById('ciudad').value.trim();
+  const errEl  = document.getElementById('form-error');
+  errEl.innerHTML = '';
+
+  if (!nombre) { errEl.innerHTML = '<div class="error-box">Por favor escribe el nombre del niño o niña.</div>'; return; }
+  if (!fecha)  { errEl.innerHTML = '<div class="error-box">Selecciona la fecha de nacimiento.</div>'; return; }
+  if (!ciudad) { errEl.innerHTML = '<div class="error-box">Escribe la ciudad de nacimiento.</div>'; return; }
+
+  const hora = document.getElementById('hora').value || 'no disponible';
+  const [y,m,d] = fecha.split('-');
+  const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const fechaStr = `${parseInt(d)} de ${meses[parseInt(m)-1]} de ${y}`;
+
+  generateReport({ nombre, fecha: fechaStr, hora, ciudad });
+}
+
+function animateSteps() {
+  const steps = ['step1','step2','step3','step4'];
+  let i = 0;
+  const iv = setInterval(() => {
+    if (i > 0) {
+      document.getElementById(steps[i-1]).classList.remove('active');
+      document.getElementById(steps[i-1]).classList.add('done');
+    }
+    if (i < steps.length) {
+      document.getElementById(steps[i]).classList.add('active');
+      i++;
+    } else { clearInterval(iv); }
+  }, 1800);
+}
+
+async function generateReport({ nombre, fecha, hora, ciudad }) {
+  show('screen-loading');
+  animateSteps();
+
+  try {
+    const res = await fetch('/api/generar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre, fecha, hora, ciudad })
+    });
+
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error || 'Error desconocido');
+
+    renderReport({ nombre, fecha, hora, ciudad, data: d });
+  } catch(e) {
+    show('screen-form');
+    document.getElementById('form-error').innerHTML =
+      `<div class="error-box">Hubo un error generando el informe. Por favor intenta de nuevo.<br><small>${e.message}</small></div>`;
+  }
+}
+
+function renderReport({ nombre, fecha, hora, ciudad, data: d }) {
+  document.getElementById('report-nombre').textContent = nombre;
+  document.getElementById('report-meta').innerHTML =
+    `Fecha: ${fecha}<br>Ciudad: ${ciudad}, Colombia` +
+    (hora !== 'no disponible' ? `<br>Hora: ${hora}` : '');
+
+  document.getElementById('sec1-titulo').textContent = d.seccion1_titulo;
+  document.getElementById('sec1-cuerpo').textContent = d.seccion1_cuerpo;
+  document.getElementById('sec1-tips-titulo').textContent = d.seccion1_tips_titulo;
+  document.getElementById('sec1-tips').innerHTML = d.seccion1_tips.map(t => `<li>${t}</li>`).join('');
+
+  document.getElementById('sec2-titulo').textContent = d.seccion2_titulo;
+  document.getElementById('sec2-cuerpo').textContent = d.seccion2_cuerpo;
+  document.getElementById('sec2-tips-titulo').textContent = d.seccion2_tips_titulo;
+  document.getElementById('sec2-tips').innerHTML = d.seccion2_tips.map(t => `<li>${t}</li>`).join('');
+
+  document.getElementById('sec3-titulo').textContent = d.seccion3_titulo;
+  document.getElementById('sec3-cuerpo').textContent = d.seccion3_cuerpo;
+  document.getElementById('sec3-tips-titulo').textContent = d.seccion3_tips_titulo;
+  document.getElementById('sec3-tips').innerHTML = d.seccion3_tips.map(t => `<li>${t}</li>`).join('');
+
+  document.getElementById('cierre-texto').textContent = d.cierre;
+  document.getElementById('report-footer').innerHTML =
+    `Este informe fue creado con amor para ${nombre}.<br>
+     Mapa Estelar Infantil © — Todos los derechos reservados.<br>
+     ¿Tienes preguntas? Escríbenos por WhatsApp.`;
+
+  show('screen-report');
+}
+
+function nuevoMapa() {
+  document.getElementById('nombre').value = '';
+  document.getElementById('fecha').value = '';
+  document.getElementById('hora').value = '';
+  document.getElementById('ciudad').value = '';
+  document.getElementById('form-error').innerHTML = '';
+  show('screen-form');
+}
+</script>
+</body>
+</html>
