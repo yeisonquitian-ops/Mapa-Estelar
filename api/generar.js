@@ -8,33 +8,40 @@ export default async function handler(req, res) {
 
   const { nombre, fecha, hora, ciudad } = req.body;
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  console.log('API Key presente:', !!apiKey);
-  console.log('API Key inicio:', apiKey ? apiKey.substring(0, 15) : 'NO KEY');
+  if (!nombre || !fecha || !ciudad) {
+    return res.status(400).json({ error: 'Faltan datos requeridos' });
+  }
+
+  const systemPrompt = `Eres un experto en astrología infantil con enfoque en psicología del desarrollo y crianza consciente. Escribe dirigiéndote a la mamá o papá en segunda persona. Tono cálido y práctico. Responde ÚNICAMENTE con JSON puro sin markdown ni backticks con esta estructura exacta:
+{"seccion1_titulo":"...","seccion1_cuerpo":"...","seccion1_tips_titulo":"Para acompañar su carácter:","seccion1_tips":["tip 1","tip 2"],"seccion2_titulo":"...","seccion2_cuerpo":"...","seccion2_tips_titulo":"Para nutrir su mundo emocional:","seccion2_tips":["tip 1","tip 2"],"seccion3_titulo":"...","seccion3_cuerpo":"...","seccion3_tips_titulo":"Para apoyar su aprendizaje:","seccion3_tips":["tip 1","tip 2"],"cierre":"..."}`;
+
+  const userMsg = `Genera el Mapa Estelar para:\n- Nombre: ${nombre}\n- Fecha: ${fecha}\n- Hora: ${hora || 'no disponible'}\n- Ciudad: ${ciudad}, Colombia`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
         model: 'claude-3-haiku-20240307',
         max_tokens: 1500,
-        system: 'Eres un experto en astrología infantil. Responde solo con JSON puro.',
-        messages: [{ role: 'user', content: `Datos: ${nombre}, ${fecha}, ${ciudad}` }]
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMsg }]
       })
     });
 
     const data = await response.json();
-    console.log('Status:', response.status);
-    console.log('Respuesta:', JSON.stringify(data).substring(0, 500));
+    if (!response.ok) return res.status(500).json({ error: 'Error de la API', detalle: data });
 
-    return res.status(200).json({ status: response.status, data });
+    const raw = (data.content || []).map(i => i.text || '').join('').trim();
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const informe = JSON.parse(clean);
+
+    return res.status(200).json(informe);
   } catch (err) {
-    console.log('Error:', err.message);
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: 'Error generando el informe', detalle: err.message });
   }
 }
